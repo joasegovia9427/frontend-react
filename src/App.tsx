@@ -1,19 +1,22 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import './App.css';
+
+import { useState } from 'react';
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+
+import viteLogo from '/vite.svg';
+
+import reactLogo from './assets/react.svg';
 
 function Home() {
-    return <h1 className="text-3xl font-bold">Home Page</h1>
+    return <h1 className="text-3xl font-bold">Home Page</h1>;
 }
 
 function About() {
-    return <h1 className="text-3xl font-bold">About Page</h1>
+    return <h1 className="text-3xl font-bold">About Page</h1>;
 }
 
 function Test() {
-    const [count, setCount] = useState(0)
+    const [count, setCount] = useState(0);
 
     return (
         <>
@@ -77,7 +80,7 @@ function Test() {
                 </button>
             </div>
         </>
-    )
+    );
 }
 
 function App() {
@@ -102,7 +105,7 @@ function App() {
                 </Routes>
             </div>
         </BrowserRouter>
-    )
+    );
 }
 
-export default App
+export default App;

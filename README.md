@@ -47,6 +47,29 @@ pnpm dev
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
+### Check Code:
+
+# Type check
+```bash
+pnpm type-check
+```
+
+# Lint
+```bash
+pnpm lint
+```
+
+# Format
+```bash
+pnpm format
+```
+
+# Run dev server
+```bash
+pnpm dev
+```
+
+
 ## Available Scripts
 
 -   `pnpm dev` - Start development server
