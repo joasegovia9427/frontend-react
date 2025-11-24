@@ -1,7 +1,14 @@
 {
     "version": "0.2",
     "language": "en",
-    "words": ["Vite", "pnpm", "tailwindcss", "tsconfig", "eslint"],
+    "words": [
+        "eslint",
+        "joasegovia",
+        "pnpm",
+        "tailwindcss",
+        "tsconfig",
+        "Vite"
+    ],
     "ignorePaths": [
         "node_modules",
         "dist",
