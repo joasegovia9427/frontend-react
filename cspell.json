@@ -1,0 +1,13 @@
+{
+    "version": "0.2",
+    "language": "en",
+    "words": ["Vite", "pnpm", "tailwindcss", "tsconfig", "eslint"],
+    "ignorePaths": [
+        "node_modules",
+        "dist",
+        "build",
+        "*.log",
+        "package-lock.json",
+        "pnpm-lock.yaml"
+    ]
+}
