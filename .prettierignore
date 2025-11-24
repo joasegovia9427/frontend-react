@@ -1,0 +1,17 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Production
+dist
+build
+
+# Misc
+.DS_Store
+*.log
+coverage
+.env
+.env.local
+
+# CSS files (Tailwind v4 syntax not compatible with Prettier)
+*.css
