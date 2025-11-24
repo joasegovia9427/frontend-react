@@ -4,7 +4,7 @@ import { ROUTES } from '~/routes/routes';
 
 export default function Header() {
     return (
-        <header className="bg-accent-dark text-white shadow-lg">
+        <header className="bg-accent-dark text-white">
             <nav className="container mx-auto flex items-center justify-between p-4">
                 <Link to={ROUTES.HOME} className="text-2xl font-bold">
                     FrontEnd React App

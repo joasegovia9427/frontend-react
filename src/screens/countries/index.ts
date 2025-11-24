@@ -1,2 +1,2 @@
-export { default as CountriesList } from './CountriesList';
-export { default as CountryDetail } from './CountryDetail';
+export { CountriesList } from './CountriesList';
+export { CountryDetail } from './CountryDetail';

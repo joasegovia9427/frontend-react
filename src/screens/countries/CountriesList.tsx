@@ -1,15 +1,26 @@
-import { EyeIcon } from '@heroicons/react/20/solid';
+import { ChevronDownIcon, EyeIcon } from '@heroicons/react/20/solid';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '~/routes/routes';
 import { countriesApi, transformCountryToList } from '~/services/countries';
-import type { CountryListItem } from '~/services/countries/types';
+import type { Country, CountryListItem } from '~/services/countries/types';
 
-export default function CountriesList() {
+import { CountryDetail } from './CountryDetail';
+
+export const CountriesList = () => {
     const [countries, setCountries] = useState<CountryListItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [expandedCountryId, setExpandedCountryId] = useState<string | null>(
+        null
+    );
+    const [countryDetails, setCountryDetails] = useState<
+        Record<string, Country>
+    >({});
+    const [loadingDetails, setLoadingDetails] = useState<
+        Record<string, boolean>
+    >({});
 
     useEffect(() => {
         const fetchCountries = async () => {
@@ -33,6 +44,33 @@ export default function CountriesList() {
         fetchCountries();
     }, []);
 
+    const toggleCountryDetails = async (countryId: string) => {
+        if (expandedCountryId === countryId) {
+            setExpandedCountryId(null);
+        } else {
+            setExpandedCountryId(countryId);
+
+            if (!countryDetails[countryId] && !loadingDetails[countryId]) {
+                try {
+                    setLoadingDetails(prev => ({ ...prev, [countryId]: true }));
+                    const details: Country =
+                        await countriesApi.getByCode(countryId);
+                    setCountryDetails(prev => ({
+                        ...prev,
+                        [countryId]: details,
+                    }));
+                } catch (err) {
+                    console.error('Failed to load country details:', err);
+                } finally {
+                    setLoadingDetails(prev => ({
+                        ...prev,
+                        [countryId]: false,
+                    }));
+                }
+            }
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center">
@@ -53,7 +91,7 @@ export default function CountriesList() {
         <div>
             <h1>Countries</h1>
             <p>{countries.length} countries found</p>
-            <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid grid-cols-1 items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {countries.map(country => (
                     <li
                         key={country.id}
@@ -89,19 +127,83 @@ export default function CountriesList() {
 
                         <div className="flex divide-x divide-gray-200">
                             <div className="flex w-0 flex-1">
+                                <button
+                                    onClick={() =>
+                                        toggleCountryDetails(country.id)
+                                    }
+                                    className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900 hover:bg-gray-50"
+                                >
+                                    <ChevronDownIcon
+                                        aria-hidden="true"
+                                        className={`size-5 text-gray-400 transition-transform duration-200 ${
+                                            expandedCountryId === country.id
+                                                ? 'rotate-180'
+                                                : ''
+                                        }`}
+                                    />
+                                    Details
+                                </button>
+                            </div>
+                            <div className="flex w-0 flex-1">
                                 <Link
                                     to={ROUTES.COUNTRY_DETAIL.replace(
                                         ':id',
                                         country.id
                                     )}
-                                    className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900 hover:bg-gray-50"
+                                    className={`relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 border border-transparent py-4 text-sm font-semibold text-gray-900 hover:bg-gray-50 ${
+                                        expandedCountryId === country.id
+                                            ? ''
+                                            : 'rounded-br-lg'
+                                    }`}
                                 >
                                     <EyeIcon
                                         aria-hidden="true"
                                         className="size-5 text-gray-400"
                                     />
-                                    View
+                                    Cities
                                 </Link>
+                            </div>
+                        </div>
+
+                        <div
+                            className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                                expandedCountryId === country.id
+                                    ? 'max-h-[600px] opacity-100'
+                                    : 'max-h-0 opacity-0'
+                            }`}
+                        >
+                            <div className="rounded-b-lg border-t border-gray-200 bg-gray-50">
+                                <div className="max-h-[400px] overflow-y-auto p-6">
+                                    {(() => {
+                                        if (loadingDetails[country.id]) {
+                                            return (
+                                                <div className="flex items-center justify-center py-8">
+                                                    <p className="text-sm text-gray-600">
+                                                        Loading details...
+                                                    </p>
+                                                </div>
+                                            );
+                                        }
+                                        if (countryDetails[country.id]) {
+                                            return (
+                                                <CountryDetail
+                                                    country={
+                                                        countryDetails[
+                                                            country.id
+                                                        ]
+                                                    }
+                                                />
+                                            );
+                                        }
+                                        return (
+                                            <div className="flex items-center justify-center py-8">
+                                                <p className="text-sm text-red-600">
+                                                    Failed to load details
+                                                </p>
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
                             </div>
                         </div>
                     </li>
@@ -109,4 +211,4 @@ export default function CountriesList() {
             </ul>
         </div>
     );
-}
+};

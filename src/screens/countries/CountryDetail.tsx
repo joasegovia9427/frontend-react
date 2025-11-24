@@ -1,172 +1,117 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-
-import { Button } from '~/components';
-import { countriesApi } from '~/services/countries';
 import type { Country } from '~/services/countries/types';
 
-export default function CountryDetail() {
-    const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
-    const [country, setCountry] = useState<Country | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchCountry = async () => {
-            if (!id) return;
-
-            try {
-                setLoading(true);
-                setError(null);
-                const data = await countriesApi.getByCode(id);
-                setCountry(data);
-            } catch (err) {
-                setError(
-                    err instanceof Error
-                        ? err.message
-                        : 'Failed to load country'
-                );
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchCountry();
-    }, [id]);
-
-    if (loading) {
-        return (
-            <div className="mx-auto max-w-2xl">
-                <Button onClick={() => navigate(-1)} className="mb-4">
-                    ← Back
-                </Button>
-                <p className="text-xl text-gray-600">
-                    Loading country details...
-                </p>
-            </div>
-        );
-    }
-
-    if (error || !country) {
-        return (
-            <div className="mx-auto max-w-2xl">
-                <Button onClick={() => navigate(-1)} className="mb-4">
-                    ← Back
-                </Button>
-                <p className="text-xl text-red-600">
-                    {error || 'Country not found'}
-                </p>
-            </div>
-        );
-    }
-
+export const CountryDetail = ({ country }: { readonly country: Country }) => {
     const currencies = country.currencies
         ? Object.entries(country.currencies).map(([code, currency]) => ({
               code,
-              ...currency,
+              name: currency.name,
+              symbol: currency.symbol,
           }))
         : [];
 
     const languages = country.languages ? Object.values(country.languages) : [];
 
+    const renderFlag = () => {
+        if (country.flag) {
+            return <span className="text-3xl">{country.flag}</span>;
+        }
+        if (country.flags?.svg) {
+            return (
+                <img
+                    src={country.flags.svg}
+                    alt={country.flags.alt || country.name.common}
+                    className="h-12 w-12 object-contain"
+                />
+            );
+        }
+        return null;
+    };
+
     return (
-        <div className="mx-auto max-w-2xl">
-            <Button onClick={() => navigate(-1)} className="mb-6">
-                ← Back
-            </Button>
+        <div className="space-y-1">
+            <div className="flex items-start gap-3">
+                {renderFlag()}
+                <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                        {country.name.common}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                        {country.name.official}
+                    </p>
+                </div>
+            </div>
 
-            <div className="border-neutral rounded-lg border bg-white p-6 shadow-lg">
-                <div className="mb-6 flex items-center gap-4">
-                    {country.flag ? (
-                        <span className="text-6xl">{country.flag}</span>
-                    ) : country.flags?.svg ? (
-                        <img
-                            src={country.flags.svg}
-                            alt={country.flags.alt || country.name.common}
-                            className="h-20 w-20 object-contain"
-                        />
-                    ) : null}
-                    <div>
-                        <h1 className="text-primary mb-2 text-4xl font-bold">
-                            {country.name.common}
-                        </h1>
-                        <p className="text-xl text-gray-600">
-                            {country.name.official}
-                        </p>
-                    </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+                <div>
+                    <h4 className="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                        Country Code
+                    </h4>
+                    <p className="text-sm text-gray-900">
+                        {country.cca2} / {country.cca3}
+                    </p>
                 </div>
 
-                <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+                {country.capital && country.capital.length > 0 && (
                     <div>
-                        <h3 className="mb-1 font-semibold text-gray-700">
-                            Country Code
-                        </h3>
-                        <p className="text-gray-900">
-                            {country.cca2} / {country.cca3}
+                        <h4 className="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                            Capital
+                        </h4>
+                        <p className="text-sm text-gray-900">
+                            {country.capital.join(', ')}
                         </p>
-                    </div>
-
-                    {country.capital && country.capital.length > 0 && (
-                        <div>
-                            <h3 className="mb-1 font-semibold text-gray-700">
-                                Capital
-                            </h3>
-                            <p className="text-gray-900">
-                                {country.capital.join(', ')}
-                            </p>
-                        </div>
-                    )}
-
-                    <div>
-                        <h3 className="mb-1 font-semibold text-gray-700">
-                            Population
-                        </h3>
-                        <p className="text-gray-900">
-                            {country.population.toLocaleString()}
-                        </p>
-                    </div>
-
-                    <div>
-                        <h3 className="mb-1 font-semibold text-gray-700">
-                            Region
-                        </h3>
-                        <p className="text-gray-900">
-                            {country.region}
-                            {country.subregion && ` - ${country.subregion}`}
-                        </p>
-                    </div>
-                </div>
-
-                {currencies.length > 0 && (
-                    <div className="mb-6">
-                        <h3 className="mb-2 font-semibold text-gray-700">
-                            Currencies
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                            {currencies.map(currency => (
-                                <span
-                                    key={currency.code}
-                                    className="rounded bg-gray-100 px-3 py-1 text-sm"
-                                >
-                                    {currency.symbol} {currency.name} (
-                                    {currency.code})
-                                </span>
-                            ))}
-                        </div>
                     </div>
                 )}
 
+                <div>
+                    <h4 className="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                        Population
+                    </h4>
+                    <p className="text-sm text-gray-900">
+                        {country.population.toLocaleString()}
+                    </p>
+                </div>
+
+                <div>
+                    <h4 className="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                        Region
+                    </h4>
+                    <p className="text-sm text-gray-900">
+                        {country.region}
+                        {country.subregion && ` - ${country.subregion}`}
+                    </p>
+                </div>
+            </div>
+
+            {currencies.length > 0 && (
+                <div>
+                    <h4 className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                        Currencies
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                        {currencies.map(currency => (
+                            <span
+                                key={currency.code}
+                                className="rounded-md bg-white px-2.5 py-1 text-xs font-medium text-gray-700 shadow-sm ring-1 ring-gray-200"
+                            >
+                                {currency.symbol} {currency.name} (
+                                {currency.code})
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {languages.length > 0 && (
-                    <div className="mb-6">
-                        <h3 className="mb-2 font-semibold text-gray-700">
+                    <div>
+                        <h4 className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
                             Languages
-                        </h3>
+                        </h4>
                         <div className="flex flex-wrap gap-2">
-                            {languages.map(language => (
+                            {languages.map((language: string) => (
                                 <span
                                     key={language}
-                                    className="rounded bg-gray-100 px-3 py-1 text-sm"
+                                    className="rounded-md bg-white px-2.5 py-1 text-xs font-medium text-gray-700 shadow-sm ring-1 ring-gray-200"
                                 >
                                     {language}
                                 </span>
@@ -176,15 +121,15 @@ export default function CountryDetail() {
                 )}
 
                 {country.timezones && country.timezones.length > 0 && (
-                    <div className="mb-6">
-                        <h3 className="mb-2 font-semibold text-gray-700">
+                    <div>
+                        <h4 className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
                             Timezones
-                        </h3>
+                        </h4>
                         <div className="flex flex-wrap gap-2">
-                            {country.timezones.map(timezone => (
+                            {country.timezones.map((timezone: string) => (
                                 <span
                                     key={timezone}
-                                    className="rounded bg-gray-100 px-3 py-1 text-sm"
+                                    className="rounded-md bg-white px-2.5 py-1 text-xs font-medium text-gray-700 shadow-sm ring-1 ring-gray-200"
                                 >
                                     {timezone}
                                 </span>
@@ -192,20 +137,7 @@ export default function CountryDetail() {
                         </div>
                     </div>
                 )}
-
-                {country.maps?.googleMaps && (
-                    <div>
-                        <a
-                            href={country.maps.googleMaps}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:text-accent underline"
-                        >
-                            View on Google Maps →
-                        </a>
-                    </div>
-                )}
             </div>
         </div>
     );
-}
+};
