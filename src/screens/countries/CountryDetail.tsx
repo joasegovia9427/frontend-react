@@ -37,7 +37,7 @@ export default function CountryDetail() {
 
     if (loading) {
         return (
-            <div className="max-w-2xl mx-auto">
+            <div className="mx-auto max-w-2xl">
                 <Button onClick={() => navigate(-1)} className="mb-4">
                     ← Back
                 </Button>
@@ -50,7 +50,7 @@ export default function CountryDetail() {
 
     if (error || !country) {
         return (
-            <div className="max-w-2xl mx-auto">
+            <div className="mx-auto max-w-2xl">
                 <Button onClick={() => navigate(-1)} className="mb-4">
                     ← Back
                 </Button>
@@ -71,24 +71,24 @@ export default function CountryDetail() {
     const languages = country.languages ? Object.values(country.languages) : [];
 
     return (
-        <div className="max-w-2xl mx-auto">
+        <div className="mx-auto max-w-2xl">
             <Button onClick={() => navigate(-1)} className="mb-6">
                 ← Back
             </Button>
 
-            <div className="bg-white p-6 rounded-lg shadow-lg border border-neutral">
-                <div className="flex items-center gap-4 mb-6">
+            <div className="border-neutral rounded-lg border bg-white p-6 shadow-lg">
+                <div className="mb-6 flex items-center gap-4">
                     {country.flag ? (
                         <span className="text-6xl">{country.flag}</span>
                     ) : country.flags?.svg ? (
                         <img
                             src={country.flags.svg}
                             alt={country.flags.alt || country.name.common}
-                            className="w-20 h-20 object-contain"
+                            className="h-20 w-20 object-contain"
                         />
                     ) : null}
                     <div>
-                        <h1 className="text-4xl font-bold text-primary mb-2">
+                        <h1 className="text-primary mb-2 text-4xl font-bold">
                             {country.name.common}
                         </h1>
                         <p className="text-xl text-gray-600">
@@ -97,9 +97,9 @@ export default function CountryDetail() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
-                        <h3 className="font-semibold text-gray-700 mb-1">
+                        <h3 className="mb-1 font-semibold text-gray-700">
                             Country Code
                         </h3>
                         <p className="text-gray-900">
@@ -109,7 +109,7 @@ export default function CountryDetail() {
 
                     {country.capital && country.capital.length > 0 && (
                         <div>
-                            <h3 className="font-semibold text-gray-700 mb-1">
+                            <h3 className="mb-1 font-semibold text-gray-700">
                                 Capital
                             </h3>
                             <p className="text-gray-900">
@@ -119,7 +119,7 @@ export default function CountryDetail() {
                     )}
 
                     <div>
-                        <h3 className="font-semibold text-gray-700 mb-1">
+                        <h3 className="mb-1 font-semibold text-gray-700">
                             Population
                         </h3>
                         <p className="text-gray-900">
@@ -128,7 +128,7 @@ export default function CountryDetail() {
                     </div>
 
                     <div>
-                        <h3 className="font-semibold text-gray-700 mb-1">
+                        <h3 className="mb-1 font-semibold text-gray-700">
                             Region
                         </h3>
                         <p className="text-gray-900">
@@ -140,14 +140,14 @@ export default function CountryDetail() {
 
                 {currencies.length > 0 && (
                     <div className="mb-6">
-                        <h3 className="font-semibold text-gray-700 mb-2">
+                        <h3 className="mb-2 font-semibold text-gray-700">
                             Currencies
                         </h3>
                         <div className="flex flex-wrap gap-2">
                             {currencies.map(currency => (
                                 <span
                                     key={currency.code}
-                                    className="bg-gray-100 px-3 py-1 rounded text-sm"
+                                    className="rounded bg-gray-100 px-3 py-1 text-sm"
                                 >
                                     {currency.symbol} {currency.name} (
                                     {currency.code})
@@ -159,14 +159,14 @@ export default function CountryDetail() {
 
                 {languages.length > 0 && (
                     <div className="mb-6">
-                        <h3 className="font-semibold text-gray-700 mb-2">
+                        <h3 className="mb-2 font-semibold text-gray-700">
                             Languages
                         </h3>
                         <div className="flex flex-wrap gap-2">
                             {languages.map(language => (
                                 <span
                                     key={language}
-                                    className="bg-gray-100 px-3 py-1 rounded text-sm"
+                                    className="rounded bg-gray-100 px-3 py-1 text-sm"
                                 >
                                     {language}
                                 </span>
@@ -177,14 +177,14 @@ export default function CountryDetail() {
 
                 {country.timezones && country.timezones.length > 0 && (
                     <div className="mb-6">
-                        <h3 className="font-semibold text-gray-700 mb-2">
+                        <h3 className="mb-2 font-semibold text-gray-700">
                             Timezones
                         </h3>
                         <div className="flex flex-wrap gap-2">
                             {country.timezones.map(timezone => (
                                 <span
                                     key={timezone}
-                                    className="bg-gray-100 px-3 py-1 rounded text-sm"
+                                    className="rounded bg-gray-100 px-3 py-1 text-sm"
                                 >
                                     {timezone}
                                 </span>

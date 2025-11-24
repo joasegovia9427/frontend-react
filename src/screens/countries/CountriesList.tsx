@@ -1,3 +1,4 @@
+import { EyeIcon } from '@heroicons/react/20/solid';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -34,7 +35,7 @@ export default function CountriesList() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="flex min-h-[60vh] items-center justify-center">
                 <p className="text-xl text-gray-600">Loading countries...</p>
             </div>
         );
@@ -42,7 +43,7 @@ export default function CountriesList() {
 
     if (error) {
         return (
-            <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="flex min-h-[60vh] items-center justify-center">
                 <p className="text-xl text-red-600">Error: {error}</p>
             </div>
         );
@@ -50,42 +51,62 @@ export default function CountriesList() {
 
     return (
         <div>
-            <h1 className="text-4xl font-bold text-primary mb-6">Countries</h1>
-            <p className="text-gray-600 mb-6">
-                {countries.length} countries found
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <h1>Countries</h1>
+            <p>{countries.length} countries found</p>
+            <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {countries.map(country => (
-                    <Link
+                    <li
                         key={country.id}
-                        to={ROUTES.COUNTRY_DETAIL.replace(':id', country.id)}
-                        className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border border-neutral"
+                        className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow-sm"
                     >
-                        <div className="flex items-center gap-3 mb-2">
-                            {country.flag && (
-                                <span className="text-3xl">{country.flag}</span>
-                            )}
-                            <h2 className="text-2xl font-bold text-primary">
-                                {country.name}
-                            </h2>
+                        <div className="flex w-full items-center justify-between p-6 pb-0">
+                            <div className="flex-1 space-y-3 truncate">
+                                <div className="flex items-center justify-between space-x-3">
+                                    <h3 className="truncate text-sm font-medium text-gray-900">
+                                        {country.name}
+                                    </h3>
+                                    <span className="inline-flex shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset">
+                                        {country.region}
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div className="">
+                                        <p className="truncate text-sm">
+                                            {`Capital: ${country.capital || 'No capital'}`}
+                                            <br />
+                                            {country.population.toLocaleString()}{' '}
+                                            people
+                                        </p>
+                                    </div>
+                                    {country.flag && (
+                                        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray-50 text-2xl outline-1 -outline-offset-1 outline-black/5">
+                                            {country.flag}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                        <p className="text-gray-600 text-sm mb-1">
-                            Code: {country.code}
-                        </p>
-                        {country.capital && (
-                            <p className="text-gray-600 text-sm mb-1">
-                                Capital: {country.capital}
-                            </p>
-                        )}
-                        <p className="text-gray-600 text-sm">
-                            Population: {country.population.toLocaleString()}
-                        </p>
-                        <p className="text-gray-500 text-xs mt-2">
-                            {country.region}
-                        </p>
-                    </Link>
+
+                        <div className="flex divide-x divide-gray-200">
+                            <div className="flex w-0 flex-1">
+                                <Link
+                                    to={ROUTES.COUNTRY_DETAIL.replace(
+                                        ':id',
+                                        country.id
+                                    )}
+                                    className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900 hover:bg-gray-50"
+                                >
+                                    <EyeIcon
+                                        aria-hidden="true"
+                                        className="size-5 text-gray-400"
+                                    />
+                                    View
+                                </Link>
+                            </div>
+                        </div>
+                    </li>
                 ))}
-            </div>
+            </ul>
         </div>
     );
 }

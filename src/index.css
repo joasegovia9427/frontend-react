@@ -26,6 +26,11 @@
     --color-neutral: #e5e5e5;
     --color-neutral-dark: #cccccc;
 
+    /* Black */
+    --color-black-light: #030712;
+    --color-black: #030712;
+    --color-black-dark: #cccccc;
+
     /* Typography */
     --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -68,8 +73,12 @@ body {
 }
 
 h1 {
-    font-size: 3.2em;
+    @apply mb-6 text-4xl text-black;
     line-height: 1.1;
+}
+
+p {
+    @apply mb-6 text-gray-800;
 }
 
 /* button {

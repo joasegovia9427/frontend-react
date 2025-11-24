@@ -1,10 +1,12 @@
 export default function About() {
     return (
-        <div className="max-w-2xl mx-auto">
-            <h1 className="text-4xl font-bold text-primary mb-4">About</h1>
-            <p className="text-gray-700">
+        <div className="mx-auto max-w-2xl">
+            <h1>About</h1>
+            <p>
                 This is a modern React boilerplate with TypeScript, Vite, React
                 Router, and Tailwind CSS.
+                <br />
+                Produly created by @joasegovia9427 - Joaquin Segovia
             </p>
         </div>
     );
