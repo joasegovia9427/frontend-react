@@ -1,6 +1,10 @@
 import type { Country, CountryListItem } from './types';
 
-const API_BASE_URL = 'https://restcountries.com/v3.1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+if (!API_BASE_URL) {
+    throw new Error('VITE_API_BASE_URL is not set');
+}
 
 // Fields for list view (10 fields max - API limit)
 // Note: 'name' includes common, official, and nativeName
