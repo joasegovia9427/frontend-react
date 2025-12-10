@@ -12,7 +12,7 @@ import tseslint from 'typescript-eslint';
 import customRulesPlugin from './eslint-rules/index.js';
 
 export default tseslint.config(
-    { ignores: ['dist'] },
+    { ignores: ['dist', 'node_modules/', 'public/build/', 'reports/'] },
     {
         files: ['**/*.{js,jsx,ts,tsx}'],
         extends: [
