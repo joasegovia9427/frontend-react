@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { ChevronDownIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import Button from '~/components/ui/Button';

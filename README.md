@@ -124,6 +124,10 @@ src/
 │   └── helpers.ts
 ├── types/              # Global TypeScript types
 │   └── global.d.ts
+├── config/             # Global configurations and constants
+│   └── api.ts
+├── assets/             # Global configurations and constants
+│   └── api.ts
 ├── constants/          # Global constants
 │   └── config.ts
 ├── index.css           # Global styles + Tailwind
