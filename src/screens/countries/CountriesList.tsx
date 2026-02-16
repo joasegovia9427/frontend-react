@@ -1,88 +1,34 @@
-import { ChevronDownIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import Button from '~/components/ui/Button';
-import { countriesApi, transformCountryToList } from '~/services/countries';
-import type { Country, CountryListItem } from '~/services/countries/types';
+import { ErrorState } from '~/components/ui/ErrorState';
+import { useCountries } from '~/services/countries';
 
-import { CountryDetail } from './CountryDetail';
+import { CountryItem } from './CountriesItem';
+import { CountriesSkeleton } from './CountriesSkeleton';
 
 export const CountriesList = () => {
-    const [countries, setCountries] = useState<CountryListItem[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { data: countries = [], isLoading, error, refetch } = useCountries();
     const [expandedCountryId, setExpandedCountryId] = useState<string | null>(
         null
     );
-    const [countryDetails, setCountryDetails] = useState<
-        Record<string, Country>
-    >({});
-    const [loadingDetails, setLoadingDetails] = useState<
-        Record<string, boolean>
-    >({});
 
-    useEffect(() => {
-        const fetchCountries = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const data = await countriesApi.getAll();
-                const transformed = data.map(transformCountryToList);
-                setCountries(transformed);
-            } catch (err) {
-                setError(
-                    err instanceof Error
-                        ? err.message
-                        : 'Failed to load countries'
-                );
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchCountries();
-    }, []);
-
-    const toggleCountryDetails = async (countryId: string) => {
-        if (expandedCountryId === countryId) {
-            setExpandedCountryId(null);
-        } else {
-            setExpandedCountryId(countryId);
-
-            if (!countryDetails[countryId] && !loadingDetails[countryId]) {
-                try {
-                    setLoadingDetails(prev => ({ ...prev, [countryId]: true }));
-                    const details: Country =
-                        await countriesApi.getByCode(countryId);
-                    setCountryDetails(prev => ({
-                        ...prev,
-                        [countryId]: details,
-                    }));
-                } catch (err) {
-                    console.error('Failed to load country details:', err);
-                } finally {
-                    setLoadingDetails(prev => ({
-                        ...prev,
-                        [countryId]: false,
-                    }));
-                }
-            }
-        }
+    const toggleCountryDetails = (countryId: string) => {
+        setExpandedCountryId(prev => (prev === countryId ? null : countryId));
     };
 
-    if (loading) {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <p className="text-xl text-gray-600">Loading countries...</p>
-            </div>
-        );
+    if (isLoading) {
+        return <CountriesSkeleton />;
     }
 
     if (error) {
         return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <p className="text-xl text-red-600">Error: {error}</p>
-            </div>
+            <ErrorState
+                title="Failed to load countries"
+                message={error.message || 'Failed to load countries'}
+                onRetry={() => {
+                    refetch();
+                }}
+            />
         );
     }
 
@@ -92,111 +38,13 @@ export const CountriesList = () => {
             <p>{countries.length} countries found</p>
             <ul className="grid grid-cols-1 items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {countries.map(country => (
-                    <li
+                    <CountryItem
                         key={country.id}
-                        className="rounded-lg bg-white shadow-sm"
-                    >
-                        <Button
-                            variant="transparent"
-                            onClick={() => toggleCountryDetails(country.id)}
-                            className="h-auto w-full p-0 text-left"
-                        >
-                            <div className="flex flex-col divide-y divide-gray-200">
-                                <div className="flex w-full items-center justify-between p-6 pb-0">
-                                    <div className="flex-1 space-y-3 truncate">
-                                        <div className="flex items-center justify-between space-x-3">
-                                            <h3 className="truncate text-sm font-medium text-gray-900">
-                                                {country.name}
-                                            </h3>
-                                            <span className="inline-flex shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset">
-                                                {country.region}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <div className="">
-                                                <p className="truncate text-sm">
-                                                    {`Capital: ${country.capital || 'No capital'}`}
-                                                    <br />
-                                                    {`Population: ${country.population.toLocaleString()}`}
-                                                    <br />
-                                                </p>
-                                            </div>
-                                            {country.flag && (
-                                                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray-50 text-2xl outline-1 -outline-offset-1 outline-black/5">
-                                                    {country.flag}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex divide-x divide-gray-200">
-                                    <div className="flex w-0 flex-1">
-                                        <div className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900">
-                                            <ChevronDownIcon
-                                                aria-hidden="true"
-                                                className={`size-5 text-gray-400 transition-transform duration-200 ${
-                                                    expandedCountryId ===
-                                                    country.id
-                                                        ? 'rotate-180'
-                                                        : ''
-                                                }`}
-                                            />
-                                            Details
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                                        expandedCountryId === country.id
-                                            ? 'max-h-[600px] opacity-100'
-                                            : 'max-h-0 opacity-0'
-                                    }`}
-                                >
-                                    <div className="rounded-b-lg border-t border-gray-200 bg-gray-50">
-                                        <div className="overflow-y-auto p-6">
-                                            {(() => {
-                                                if (
-                                                    loadingDetails[country.id]
-                                                ) {
-                                                    return (
-                                                        <div className="flex items-center justify-center py-8">
-                                                            <p className="text-sm text-gray-600">
-                                                                Loading
-                                                                details...
-                                                            </p>
-                                                        </div>
-                                                    );
-                                                }
-                                                if (
-                                                    countryDetails[country.id]
-                                                ) {
-                                                    return (
-                                                        <CountryDetail
-                                                            country={
-                                                                countryDetails[
-                                                                    country.id
-                                                                ]
-                                                            }
-                                                        />
-                                                    );
-                                                }
-                                                return (
-                                                    <div className="flex items-center justify-center py-8">
-                                                        <p className="text-sm text-red-600">
-                                                            Failed to load
-                                                            details
-                                                        </p>
-                                                    </div>
-                                                );
-                                            })()}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </Button>
-                    </li>
+                        countryId={country.id}
+                        isExpanded={expandedCountryId === country.id}
+                        onToggle={() => toggleCountryDetails(country.id)}
+                        country={country}
+                    />
                 ))}
             </ul>
         </div>
